@@ -18,7 +18,8 @@ class VisionTargeting(object):
                 global text_FontSize
                 global img
                 global sentence
-                self.sentence = '008'
+                self.angle = 0
+                self.distance = 0
                 
                 display = Display()
                 
@@ -70,13 +71,14 @@ class VisionTargeting(object):
                         first_Turn = 0
                         secondDistance = 0
                         adjacent = 0
+                        actual_Distance = 0
                         
                         actual_img = image
                         cv2image = actual_img.getNumpyCv2()
                         actual_img = cv2image
                         cv2.imwrite('test.jpg', actual_img)
                         hsv = cv2.cvtColor(actual_img, cv2.COLOR_BGR2HSV)
-                        lower_green = np.array([45,60,15])
+                        lower_green = np.array([45,20,15])
                         upper_green = np.array([95,255,60])
                         mask = cv2.inRange(hsv, lower_green, upper_green)
                         res = cv2.bitwise_and(actual_img,actual_img,mask=mask)
@@ -118,7 +120,7 @@ class VisionTargeting(object):
                                 brc_List2 = list(bottom_RightCorner2)
 
                                 blobs_height = brc_List[1] - trc_List[1]
-                                print 'height%s' %blobs_height
+                                #print 'height%s' %blobs_height
 
                                 if trc_List[0] < trc_List2[0]:
                                         boundingBox_length = abs(tlc_List[0] - trc_List2[0])
@@ -127,7 +129,6 @@ class VisionTargeting(object):
                                         boundingBox_length = abs(tlc_List2[0] - trc_List[0])
 
                                 blobs_length = boundingBox_length
-                                print 'length%s' %blobs_length
 
                                 bb_size = (blobs_height ** 2) + (boundingBox_length ** 2) # a^2 + b^2 = c^2
                                 bb_size = sqrt(bb_size) #hypotenuse
@@ -142,7 +143,7 @@ class VisionTargeting(object):
                                 #self.ultraSonic_Dist = 549.295002708 / bb_size # PEGS DISTANCE 549 pixels for 1 foot 
                                 #actual_Distance = round(self.ultraSonic_Dist, 2)
                                 #actual_Distance = actual_Distance * 12
-                                print actual_Distance
+                                #print actual_Distance
 
                                 adjusted_y = tlc_List[1] - 17
                                 adjusted2_y = tlc_List2[1] - 17        # Adjusted Y axis for text to show in a better location
@@ -169,19 +170,11 @@ class VisionTargeting(object):
                                 angle_Tangent = 66 * center_off
                                 angle_Tangent_off = angle_Tangent / 720
 
-                                print 'offset : %s' %angle_Tangent_off
-
                                 angle_off = 7.5/actual_Distance
                                 angle_Tangent = atan(angle_off)
                                 angle_Tangent = math.degrees(angle_Tangent)
                                 angle_Tangent = abs(angle_Tangent - angle_Tangent_off)
                                 angle_Tangent = round(angle_Tangent, 2)
-                                
-                                print 'degrees %s' %angle_Tangent
-
-                                
-                                #print distance_of
-                                
 
                                 real_dist = (.002416 * (actual_Distance ** 2) + (0.926 * actual_Distance) + 0.124) 
                                 real_dist = round(real_dist, 2)
@@ -199,7 +192,7 @@ class VisionTargeting(object):
                                 secondTurn = abs(180 - 90 - firstTurn)
                                 secondTurn = 90 - secondTurn
                                 secondTurn = round(secondTurn, 2)
-                                print 'secondTurn%s : ' %secondTurn
+                                #print 'secondTurn%s : ' %secondTurn
 
                                 if (360) > x_center:
                                         angle_Tangent -= (angle_Tangent * 2)
@@ -233,16 +226,22 @@ class VisionTargeting(object):
                         green_target.show()
                         time.sleep(speed) 
                         print 'Loop Ran'
-                        print '008*FirstAngle*%s*SecondTurn*%s*FirstDistance*%s*SecondDistance*%s*' % (firstTurn, secondTurn, firstDistance, secondDistance)
+                        self.angle = angle_Tangent
+                        self.distance = actual_Distance
+                        return '008*FirstAngle*%s*SecondTurn*%s*FirstDistance*%s*SecondDistance*%s*' % (firstTurn, secondTurn, firstDistance, secondDistance)
 
-        def getSentence(self):
-                return self.sentence
+        def getAngle(self):
+                return "%s" %self.angle
+        def getDistance(self):
+                self.distance = round(self.distance,2)
+                return "%s" %self.distance
 
 
 if __name__ == "__main__":
         VisionTargeting1 = VisionTargeting(0.1)
         VisionTargeting1.Loop()
-        print VisionTargeting1.getSentence()
+        print VisionTargeting1.getAngle()
+        print VisionTargeting1.getDistance()
 
 
 

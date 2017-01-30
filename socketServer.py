@@ -15,7 +15,9 @@ import mainGUI
 time.sleep(2)
 vision = mainGUI.VisionTargeting(0.1)
 
-
+def getAngle():
+        vision.Loop()
+        return vision.getAngle()
 def getTarget():
         return  vision.Loop()
 
@@ -79,7 +81,8 @@ def switch_case(argument):
                 3: makeGray,
                 4: captureImgInMemory,
                 5: shutdownPI,
-                8: getTarget
+                8: getTarget,
+                9: getAngle
         }
         # get function from swither
         func = switcher.get(argument, lambda: "nothing")
@@ -117,6 +120,9 @@ class MyUDPHandler(SocketServer.BaseRequestHandler):
         if int(x) == 8:
                 print "get target data"
                 socket.sendto(switch_case(8), self.client_address)
+        if int(x) == 9:
+                print "get angle data"
+                socket.sendto(switch_case(9), self.client_address)
 
                 
        # print data[0]
