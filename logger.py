@@ -29,5 +29,3 @@ def write_log():
 	file.write("------------------------------")
 
 	file.close()
-
-write_log()
